@@ -148,7 +148,139 @@
                     <main>
                         <p><img src="https://go4clouds.github.io/docs/images/go4clouds-light.png" alt="go4clouds" /></p>
 <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="containers"><a class="header" href="#containers">Containers</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="lab-exercises-for-containerized-applications"><a class="header" href="#lab-exercises-for-containerized-applications">Lab Exercises for containerized applications</a></h1>
+<p>Add your regular user to docker group</p>
+<pre><code>usermod -a -G docker YOUR_USERNAME
+</code></pre>
+<h2 id="exercise-0---build-hello-world-web-application"><a class="header" href="#exercise-0---build-hello-world-web-application">Exercise 0 - Build hello-world web application</a></h2>
+<ul>
+<li>Create project directory</li>
+</ul>
+<pre><code>mkdir -p webapp/app
+cd webapp
+</code></pre>
+<ul>
+<li>Create application source code</li>
+</ul>
+<pre><code>cat &gt; app/index.html &lt;&lt; EOF
+&lt;h1&gt;Hello world!&lt;/h1&gt;
+EOF
+</code></pre>
+<ul>
+<li>Define container building recipe</li>
+</ul>
+<pre><code>cat &gt; Dockerfile &lt;&lt; EOF
+FROM busybox
+ADD app/index.html /www/index.html
+EXPOSE 8005
+CMD httpd -p 8005 -h /www; tail -f /dev/null
+EOF
+</code></pre>
+<ul>
+<li>Build container image localy</li>
+</ul>
+<pre><code>docker build -t hello-world .
+</code></pre>
+<ul>
+<li>Start and test application</li>
+</ul>
+<pre><code>docker run -d -p 80:8005 hello-world
+</code></pre>
+<ul>
+<li>Test web application locally </li>
+</ul>
+<pre><code>curl http://127.0.0.1:80
+</code></pre>
+<ul>
+<li>Change tag container image and provide repository name </li>
+</ul>
+<pre><code>docker tag hello-world ttl.sh/hello-world:8h
+</code></pre>
+<h2 id="exercise-1---build-python-flask-application"><a class="header" href="#exercise-1---build-python-flask-application">Exercise 1 - Build python Flask application</a></h2>
+<ul>
+<li>Install required packages</li>
+</ul>
+<pre><code>apt install python3 python3-pip git-core
+</code></pre>
+<ul>
+<li>Create application directory</li>
+</ul>
+<pre><code>mkdir -p myapp/src
+cd myapp/src
+</code></pre>
+<ul>
+<li>Write application source code</li>
+</ul>
+<pre><code>cat &gt; main.py &lt;&lt;EOF
+from flask import Flask
+app = Flask(__name__)
+
+@app.route(&quot;/&quot;)
+def hello():
+    return &quot;Hello from Python!&quot;
+
+if __name__ == &quot;__main__&quot;:
+    app.run(host='0.0.0.0',port=8081)
+EOF
+</code></pre>
+<ul>
+<li>Create requirements file</li>
+</ul>
+<pre><code>cat &gt; src/requirements.txt &lt;&lt;EOF
+Flask
+EOF
+</code></pre>
+<ul>
+<li>Install python required modules</li>
+</ul>
+<pre><code>pip3 install -r src/requirements.txt
+</code></pre>
+<ul>
+<li>Start application and test it locally</li>
+</ul>
+<pre><code>python3 src/main.py
+</code></pre>
+<p>In other terminal</p>
+<pre><code>curl http://0.0.0.0:8081
+</code></pre>
+<ul>
+<li>Create container file </li>
+</ul>
+<pre><code>cat &gt; Dockerfile &lt;&lt;EOF
+FROM registry.opensuse.org/opensuse/leap:15.3
+
+RUN zypper ref &amp;&amp; zypper install -y python3 python3-pip
+
+RUN mkdir /app
+WORKDIR /app
+COPY src/* /app/
+RUN pip3 install -r requirements.txt
+
+EXPOSE 8081
+CMD [&quot;python3&quot;, &quot;/app/main.py&quot;]
+EOF
+</code></pre>
+<ul>
+<li>Create git repository and application files to it</li>
+</ul>
+<pre><code>git config --global user.email &quot;you@example.com&quot;
+git config --global user.name &quot;Your Name&quot;
+
+git init
+git add Dockerfile src
+git commit -m &quot;Initial commit&quot; -a
+git log
+</code></pre>
+<ul>
+<li>Build cointainer image </li>
+</ul>
+<pre><code>docker build -f Dockerfile -t myapp:v1.0 .
+</code></pre>
+<ul>
+<li>Launch application container</li>
+</ul>
+<pre><code>docker run -p 8081:8081 myapp:v1.0
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lab-exercises-for-kubernetes-introduction"><a class="header" href="#lab-exercises-for-kubernetes-introduction">Lab Exercises for Kubernetes introduction</a></h1>
 <p>Visit following websites:</p>
 <ul>
