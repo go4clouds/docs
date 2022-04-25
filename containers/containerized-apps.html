@@ -193,6 +193,33 @@ EOF
 </ul>
 <pre><code>docker tag hello-world ttl.sh/hello-world:8h
 </code></pre>
+<ul>
+<li>Push container image to ttl.sh</li>
+</ul>
+<pre><code>docker push ttl.sh/hello-world:8h
+</code></pre>
+<ul>
+<li>Run hello-world container image on Kubernetes</li>
+</ul>
+<pre><code>kubectl create namespace hello-world
+kubectl run -n hello-world hello-world --image=ttl.sh/hello-world:8h
+</code></pre>
+<ul>
+<li>Test this application</li>
+</ul>
+<pre><code>kubectl get events -n hello-world
+kubectl get pods -n hello-world
+</code></pre>
+<ul>
+<li>Open tunnel to pod container</li>
+</ul>
+<pre><code>kubectl port-forward -n hello-world pod/hello-world 80:80
+</code></pre>
+<ul>
+<li>Test web application locally</li>
+</ul>
+<pre><code>curl http://127.0.0.1
+</code></pre>
 <h2 id="exercise-1---build-python-flask-application"><a class="header" href="#exercise-1---build-python-flask-application">Exercise 1 - Build python Flask application</a></h2>
 <ul>
 <li>Install required packages</li>
