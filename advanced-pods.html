@@ -160,7 +160,7 @@ metadata:
 spec:
   containers:
   - name: memory-demo-ctr
-    image: registry.k8s:5000/stress
+    image: polinux/stress
     resources:
       limits:
         memory: &quot;200Mi&quot;
@@ -209,7 +209,7 @@ metadata:
 spec:
   containers:
   - name: memory-demo-2-ctr
-    image: registry.k8s:5000/stress
+    image: polinux/stress
     resources:
       requests:
         memory: &quot;50Mi&quot;
@@ -287,7 +287,7 @@ metadata:
 spec:
   containers:
   - name: cpu-demo-ctr
-    image: registry.k8s:5000/stress
+    image: polinux/stress
     resources:
       limits:
         cpu: &quot;1&quot;
@@ -361,7 +361,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: registry.k8s:5000/nginx
+    image: nginx
     imagePullPolicy: IfNotPresent
   nodeSelector:
     disktype: ssd
@@ -402,7 +402,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: registry.k8s:5000/nginx
+    image: nginx
     imagePullPolicy: IfNotPresent
   nodeSelector:
     disktype: ssd
