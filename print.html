@@ -289,64 +289,80 @@ git log
 <pre><code>docker push ttl.sh/myapp-v1.0:8h
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lab-exercises-for-kubernetes-introduction"><a class="header" href="#lab-exercises-for-kubernetes-introduction">Lab Exercises for Kubernetes introduction</a></h1>
-<p>Visit following websites:</p>
-<ul>
-<li>https://kubernetes.io/docs/</li>
-<li>https://kubernetes.io/blog/</li>
-<li>https://github.com/kubernetes/</li>
-<li>https://www.cncf.io/</li>
-</ul>
-<h2 id="exercise-0---login-and-prepare-lab-environment"><a class="header" href="#exercise-0---login-and-prepare-lab-environment">Exercise 0 - Login and prepare lab environment</a></h2>
-<ul>
-<li>Lab environment description </li>
-</ul>
-<pre><code>       virtualization: KVM with libvirt / virt-manager
-       virtual network: 10.168.0.1/24
-       virtual machines:
-                        * master1 k8s-master1 - 10.168.0.101
-                        * master2 k8s-master2 - 10.168.0.102
-                        * master3 k8s-master3 - 10.168.0.103
-                        * worker1 k8s-worker1 - 10.168.0.201
-                        * worker2 k8s-worker2 - 10.168.0.202
+<p>Visit following websites:
+<a href="https://kubernetes.io/docs/">Official documentation</a>
+<a href="https://github.com/kubernetes/">Github repository</a>
+<a href="https://www.cncf.io/">CNCF website</a></p>
+<h2 id="introduction-to-kubernetes"><a class="header" href="#introduction-to-kubernetes">Introduction to Kubernetes</a></h2>
+<p>Kubernetes basic commands</p>
+<pre><code>kubectl cluster-info
+kubectl get nodes
+kubectl get nodes -o wide
+kubectl describe node worker2
+kubectl get ns
+kubectl get pods --namespace kube-system
+kubectl get pods --namespace kube-system -o wide
+kubectl get pods --all-namespaces
+kubectl get pods -A
+kubectl describe pods
+kubectl get events
+kubectl api-resources
+kubectl api-versions
+kubectl explain pod
+kubectl explain pod --recursive
 </code></pre>
-<ul>
-<li>Start virtual machines, on k8s-host run:</li>
-</ul>
-<pre><code class="language-shell">virsh list --all
-virsh start k8s-master1
-virsh start k8s-master2
-virsh start k8s-master3
-virsh start k8s-worker1
-virsh start k8s-worker2
+<p>Install kubectl bash autocompletion</p>
+<pre><code>kubectl completion bash
+echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; ~/.bashrc       
+source &lt;(kubectl completion bash)
 </code></pre>
-<p>or</p>
-<pre><code class="language-shell">for SRV in k8s-master1 k8s-master2 k8s-master3 k8s-worker1 k8s-worker2; do virsh start $SRV; done
+<p>Check labes for nodes and add label role</p>
+<pre><code>kubectl get nodes --show-labels
+kubectl label node worker2 node-role.kubernetes.io/worker=
 </code></pre>
-<p>Note: All exercises please run <code>k8s-host</code></p>
-<h2 id="exercise-1---install-kubernetes-client"><a class="header" href="#exercise-1---install-kubernetes-client">Exercise 1 - Install Kubernetes client</a></h2>
-<ul>
-<li>Install <code>kubectl</code> package</li>
-</ul>
-<pre><code class="language-shell">sudo apt-get install kubectl
-kubectl version
+<p>Remove label from node</p>
+<pre><code>kubectl label node worker2 node-role.kubernetes.io/worker-
 </code></pre>
-<h2 id="exercise-2---configure-kubeconfig-file"><a class="header" href="#exercise-2---configure-kubeconfig-file">Exercise 2 - Configure KUBECONFIG file</a></h2>
-<ul>
-<li>Download KUBECONfIG file</li>
-</ul>
+<p>Check node taints</p>
+<pre><code>kubectl describe nodes | grep Taints
+</code></pre>
+<p>Add <code>NoSchedule</code> taint effect to worker1</p>
+<pre><code>kubectl taint node worker1 node-role.kubernetes.io/worker=:NoSchedule
+</code></pre>
+<p>Remove node taint</p>
+<pre><code>kubectl taint node k8s-worker1 node-role.kubernetes.io/worker-
+</code></pre>
+<p>How to create a template pod manifest</p>
+<pre><code>kubectl run test --image=nginx --dry-run -o yaml
+</code></pre>
+<p>How to create a template deployment manifest</p>
+<pre><code>kubectl create deployment nginx --image=nginx --dry-run -o yaml
+</code></pre>
+<p>How to create a template service manifest</p>
+<pre><code>kubectl create service clusterip my-service --tcp=8080 --dry-run -o yaml
+</code></pre>
+<p>Start busybox pod container</p>
+<pre><code>kubectl run busybox --image=busybox -- sleep 3600
+</code></pre>
+<p>Start debian pod container</p>
+<pre><code>kubectl run test --image=debian -- sleep 3600
+</code></pre>
+<p>Create tunnel to service in Kubernetes cluster from Local Dev Machine</p>
+<pre><code>kubectl port-forward -n demo service/&lt;SERVICE_NAME&gt; &lt;LOCAL_PORT&gt;:&lt;SERVICE_PORT&gt;
+</code></pre>
+<h2 id="exercise-0---configure-kubeconfig-file"><a class="header" href="#exercise-0---configure-kubeconfig-file">Exercise 0 - Configure KUBECONFIG file</a></h2>
+<p>Download KUBECONfIG file</p>
 <pre><code class="language-shell">mkdir $HOME/.kube
-scp root@master1:/etc/kubernetes/admin.conf $HOME/
+scp root@cp1:/etc/kubernetes/admin.conf $HOME/
 cp $HOME/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 </code></pre>
-<ul>
-<li>Check cluster connection</li>
-</ul>
+<p>Check cluster connection</p>
 <pre><code class="language-shell">kubectl cluster-info
 </code></pre>
 <p>Output</p>
-<pre><code>Kubernetes control plane is running at https://k8smaster:6443
-CoreDNS is running at https://k8smaster:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+<pre><code>Kubernetes control plane is running at https://cp1:6443
+CoreDNS is running at https://cp1:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 </code></pre>
@@ -357,10 +373,8 @@ kubectl cluster-info
 <p>or</p>
 <pre><code class="language-shell">kubectl --kubeconfig=$HOME/admin.conf cluster-info
 </code></pre>
-<h2 id="exercise-3---check-and-configure-kubeconfig-config"><a class="header" href="#exercise-3---check-and-configure-kubeconfig-config">Exercise 3 - Check and configure KUBECONFIG config</a></h2>
-<ul>
-<li>Check current cluster config</li>
-</ul>
+<h2 id="exercise-1---check-and-configure-kubeconfig-config"><a class="header" href="#exercise-1---check-and-configure-kubeconfig-config">Exercise 1 - Check and configure KUBECONFIG config</a></h2>
+<p>Check current cluster config</p>
 <pre><code class="language-shell">kubectl config view
 kubectl config get-clusters
 kubectl config get-users
@@ -368,36 +382,17 @@ kubectl config get-contexts
 kubectl config current-context
 kubectl get pods
 </code></pre>
-<ul>
-<li>Set admin context</li>
-</ul>
+<p>Set admin context</p>
 <pre><code class="language-shell">kubectl config set-context kube-system-admin --cluster=kubernetes  --user=kubernetes-admin --namespace=kube-system
 kubectl config get-contexts
 kubectl config use-context kube-system-admin
 kubectl get pods
 </code></pre>
-<ul>
-<li>Use local context</li>
-</ul>
+<p>Use local context</p>
 <pre><code class="language-shell">kubectl config use-context kubernetes-admin@kubernetes
 </code></pre>
-<h2 id="exercise-4---setup-bash-auto-completion"><a class="header" href="#exercise-4---setup-bash-auto-completion">Exercise 4 - Setup bash auto-completion</a></h2>
-<ul>
-<li>Configure Kubernetes bash auto-completion</li>
-</ul>
-<pre><code class="language-shell">sudo apt-get install bash-completion
-source &lt;(kubectl completion bash)
-echo &quot;source &lt;(kubectl completion bash)&quot; &gt;&gt; $HOME/.bashrc
-</code></pre>
-<ul>
-<li>Test bash auto-completion</li>
-</ul>
-<pre><code class="language-shell">kubec&lt;Tab&gt; cl&lt;Tab&gt;
-</code></pre>
 <h2 id="optional-1---setup-text-editor"><a class="header" href="#optional-1---setup-text-editor">Optional 1 - Setup text editor</a></h2>
-<ul>
-<li>Prepare text editor for editing Kubernetes yaml manifests</li>
-</ul>
+<p>Prepare text editor for editing Kubernetes yaml manifests</p>
 <pre><code class="language-shell">cat &lt;&lt; EOF &gt; ~/.vimrc
 &quot; Sets tabstop to 2 for working with YAML
 set ts=2
