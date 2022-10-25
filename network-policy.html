@@ -148,7 +148,7 @@
                         <h1 id="lab-exercises-for-network-policy"><a class="header" href="#lab-exercises-for-network-policy">Lab Exercises for Network Policy</a></h1>
 <h2 id="exercise-0---testing-network-policy"><a class="header" href="#exercise-0---testing-network-policy">Exercise 0 - Testing Network Policy</a></h2>
 <p>Create an nginx deployment and expose it via a service</p>
-<pre><code class="language-shell">kubectl create deployment nginx --image=registry.k8s:5000/nginx
+<pre><code class="language-shell">kubectl create deployment nginx --image=nginx
 </code></pre>
 <p>Output:</p>
 <pre><code>deployment.apps/nginx created
@@ -310,7 +310,7 @@ spec:
     spec:
       containers:
       - name: leader
-        image: &quot;registry.k8s:5000/redis:6.0.5&quot;
+        image: &quot;redis:6.0.5&quot;
         resources:
           requests:
             cpu: 100m

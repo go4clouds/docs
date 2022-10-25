@@ -178,7 +178,7 @@ kubectl get pods -n kube-system
 <ul>
 <li>Create new pod in <code>default</code> namespace</li>
 </ul>
-<pre><code class="language-shell">kubectl run test1 --image=registry.k8s:5000/nginx
+<pre><code class="language-shell">kubectl run test1 --image=nginx
 </code></pre>
 <ul>
 <li>Check pod status and wait until it will be <code>Running</code></li>
@@ -217,7 +217,7 @@ kubectl get namespaces
 <ul>
 <li>Save pod template to file</li>
 </ul>
-<pre><code class="language-shell">kubectl run app1 -n project1 --image=registry.k8s:5000/ubuntu --dry-run=client -o yaml &gt; pod-app1.yaml
+<pre><code class="language-shell">kubectl run app1 -n project1 --image=ubuntu --dry-run=client -o yaml &gt; pod-app1.yaml
 </code></pre>
 <ul>
 <li>Apply pod manifest to cluster</li>
@@ -243,7 +243,7 @@ kubectl get namespaces
 <ul>
 <li>Start any Linux distro container</li>
 </ul>
-<pre><code class="language-shell">kubectl run test -n debug --image=registry.k8s:5000/ubuntu -- sleep 3600
+<pre><code class="language-shell">kubectl run test -n debug --image=ubuntu -- sleep 3600
 </code></pre>
 <ul>
 <li>Wait until it will be <code>Running</code></li>

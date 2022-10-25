@@ -556,7 +556,7 @@ kubectl get pods -n kube-system
 <ul>
 <li>Create new pod in <code>default</code> namespace</li>
 </ul>
-<pre><code class="language-shell">kubectl run test1 --image=registry.k8s:5000/nginx
+<pre><code class="language-shell">kubectl run test1 --image=nginx
 </code></pre>
 <ul>
 <li>Check pod status and wait until it will be <code>Running</code></li>
@@ -595,7 +595,7 @@ kubectl get namespaces
 <ul>
 <li>Save pod template to file</li>
 </ul>
-<pre><code class="language-shell">kubectl run app1 -n project1 --image=registry.k8s:5000/ubuntu --dry-run=client -o yaml &gt; pod-app1.yaml
+<pre><code class="language-shell">kubectl run app1 -n project1 --image=ubuntu --dry-run=client -o yaml &gt; pod-app1.yaml
 </code></pre>
 <ul>
 <li>Apply pod manifest to cluster</li>
@@ -621,7 +621,7 @@ kubectl get namespaces
 <ul>
 <li>Start any Linux distro container</li>
 </ul>
-<pre><code class="language-shell">kubectl run test -n debug --image=registry.k8s:5000/ubuntu -- sleep 3600
+<pre><code class="language-shell">kubectl run test -n debug --image=ubuntu -- sleep 3600
 </code></pre>
 <ul>
 <li>Wait until it will be <code>Running</code></li>
@@ -1124,7 +1124,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: registry.k8s:5000/nginx:1.14.2
+        image: nginx:1.14.2
         ports:
         - containerPort: 80
 EOF
@@ -1195,7 +1195,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: registry.k8s:5000/nginx:1.16.1 # Update the version of nginx from 1.14.2 to 1.16.1
+        image: nginx:1.16.1 # Update the version of nginx from 1.14.2 to 1.16.1
         ports:
         - containerPort: 80
 EOF
@@ -1225,7 +1225,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: registry.k8s:5000/nginx:1.14.2
+        image: nginx:1.14.2
         ports:
         - containerPort: 80
 EOF
@@ -1250,7 +1250,7 @@ EOF
 <ul>
 <li>Create test deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl create deployment test --image=registry.k8s:5000/nginx:1.14.2
+<pre><code class="language-shell">kubectl create deployment test --image=nginx:1.14.2
 </code></pre>
 <ul>
 <li>Check deployment status</li>
@@ -1271,7 +1271,7 @@ kubectl rollout history deployment test
 <ul>
 <li>Update deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl set image deployment test nginx=registry.k8s:5000/nginx:1.16.1 --record
+<pre><code class="language-shell">kubectl set image deployment test nginx=nginx:1.16.1 --record
 </code></pre>
 <ul>
 <li>Check deployment status </li>
@@ -1412,7 +1412,7 @@ metadata:
 spec:
   containers:
   - name: nginx-secret
-    image: registry.k8s:5000/nginx
+    image: nginx
     command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;env&quot; ]
     env:
       - name: dbuser
@@ -1550,7 +1550,7 @@ spec:
         app: app-nfs
     spec:
       containers:
-      - image: registry.k8s:5000/nginx
+      - image: nginx
         name: nginx
         volumeMounts:
           - mountPath: &quot;/usr/share/nginx/html&quot;
@@ -2076,7 +2076,7 @@ kubectl logs -n metallb-system controller-&lt;Tab&gt;
 <li>Create new application in specific namespace</li>
 </ul>
 <pre><code class="language-shell">kubectl create namespace front-web
-kubectl create deployment -n front-web web-app --image=registry.k8s:5000/nginx
+kubectl create deployment -n front-web web-app --image=nginx
 </code></pre>
 <ul>
 <li>Scale up application deployment</li>
@@ -2604,7 +2604,7 @@ sysctl -w net.ipv4.ip_forward=1
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lab-exercises-for-network-policy"><a class="header" href="#lab-exercises-for-network-policy">Lab Exercises for Network Policy</a></h1>
 <h2 id="exercise-0---testing-network-policy"><a class="header" href="#exercise-0---testing-network-policy">Exercise 0 - Testing Network Policy</a></h2>
 <p>Create an nginx deployment and expose it via a service</p>
-<pre><code class="language-shell">kubectl create deployment nginx --image=registry.k8s:5000/nginx
+<pre><code class="language-shell">kubectl create deployment nginx --image=nginx
 </code></pre>
 <p>Output:</p>
 <pre><code>deployment.apps/nginx created
@@ -2766,7 +2766,7 @@ spec:
     spec:
       containers:
       - name: leader
-        image: &quot;registry.k8s:5000/redis:6.0.5&quot;
+        image: &quot;redis:6.0.5&quot;
         resources:
           requests:
             cpu: 100m
