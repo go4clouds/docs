@@ -273,10 +273,10 @@ spec:
 EOF
 </code></pre>
 <p>Apply the new YAML file:</p>
-<pre><code class="language-shell"> kubectl apply -f https://k8s.io/examples/application/deployment-scale.yaml
+<pre><code class="language-shell">kubectl apply -f https://k8s.io/examples/application/deployment-scale.yaml
 </code></pre>
 <p>Verify that the Deployment has four Pods:</p>
-<pre><code class="language-shell"> kubectl get pods -l app=nginx
+<pre><code class="language-shell">kubectl get pods -l app=nginx
 </code></pre>
 <p>The output is similar to this:</p>
 <pre><code> NAME                               READY     STATUS    RESTARTS   AGE
@@ -292,76 +292,108 @@ EOF
 <ul>
 <li>Create test deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl create deployment test --image=nginx:1.14.2
+<pre><code class="language-shell">kubectl create namespace webapp
+kubectl create deployment -n webapp test --image=nginx:1.14.2
 </code></pre>
 <ul>
 <li>Check deployment status</li>
 </ul>
-<pre><code class="language-shell">kubectl get deploy,rs,pods
-kubectl rollout history deployment test
+<pre><code class="language-shell">kubectl get deploy,rs,pods -n webapp
+kubectl rollout history deployment -n webapp test
 </code></pre>
 <ul>
 <li>Change number of replicas</li>
 </ul>
-<pre><code class="language-shell">kubectl scale deployment test --replicas=3 --record
+<pre><code class="language-shell">kubectl scale deployment -n webapp test --replicas=3 --record
 </code></pre>
 <ul>
 <li>Check deployment status</li>
 </ul>
-<pre><code class="language-shell">kubectl get deploy,rs,pods
+<pre><code class="language-shell">kubectl get deploy,rs,pods -n webapp
 </code></pre>
 <ul>
 <li>Update deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl set image deployment test nginx=nginx:1.16.1 --record
+<pre><code class="language-shell">export CONTAINER_NAME=$(kubectl get deployment -n webapp test -o jsonpath=&quot;{...name}&quot; | cut -d &quot; &quot; -f2)
+kubectl set image deployment -n webapp test $CONTAINER_NAME=nginx:1.20.2 --record
 </code></pre>
 <ul>
 <li>Check deployment status </li>
 </ul>
-<pre><code class="language-shell">kubectl get deploy,rs,pods
+<pre><code class="language-shell">kubectl get deploy,rs,pods -n webapp
 </code></pre>
 <ul>
 <li>Check deployment rollout history</li>
 </ul>
-<pre><code class="language-shell">kubectl rollout history --revision=2 deployment test
+<pre><code class="language-shell">kubectl rollout history --revision=2 -n webapp deployment test
 </code></pre>
 <ul>
 <li>Change resource limits </li>
 </ul>
-<pre><code class="language-shell">kubectl set resources deployment test --containers=nginx --limits=cpu=200m,memory=512Mi --record
+<pre><code class="language-shell">kubectl set resources -n webapp deployment test --containers=nginx --limits=cpu=200m,memory=512Mi --record
 </code></pre>
 <ul>
-<li>Braking deployment </li>
+<li>Mess up deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl rollout history deployment test
-kubectl set image deployment test nginx=nginx:1.173 --record 
+<pre><code class="language-shell">kubectl rollout history deployment -n webapp test
+kubectl set image deployment -n webapp test $CONTAINER_NAME=nginx:1.173-NON-EXISTING --record 
 </code></pre>
 <ul>
 <li>Check the status</li>
 </ul>
-<pre><code class="language-shell">kubectl get deploy,rs,pods
-kubectl rollout status deployment test
+<pre><code class="language-shell">kubectl get deploy,rs,pods -n webapp
+kubectl rollout status deployment -n webapp test
 </code></pre>
 <ul>
 <li>Deployment rollback</li>
 </ul>
-<pre><code class="language-shell">kubectl rollout undo deployment test
+<pre><code class="language-shell">kubectl rollout undo deployment -n webapp test
 </code></pre>
 <h2 id="exercise-2---enable-autoscaling"><a class="header" href="#exercise-2---enable-autoscaling">Exercise 2 - Enable autoscaling</a></h2>
 <ul>
+<li>Deploy latest metrics-server</li>
+</ul>
+<pre><code class="language-shell">wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+</code></pre>
+<p>Add <code>--kubelet-insecure-tls</code> to <code>components.yaml</code></p>
+<pre><code>                ...
+        spec:
+            containers:
+                - args:
+                  - --cert-dir=/tmp
+                  - --secure-port=4443
+                  - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+                  - --kubelet-use-node-status-port
+                  - --metric-resolution=15s
+
+               # Add Line number 136
+
+                - --kubelet-insecure-tls
+</code></pre>
+<ul>
+<li>Deploy metric server</li>
+</ul>
+<pre><code class="language-shell">kubectl apply -f components.yaml
+kubectl get deploy -n kube-system metrics-server
+</code></pre>
+<p>Wait at least 1 minute and try to use:</p>
+<pre><code class="language-shell">kubectl top nodes
+kubectl top pods -n webapp
+</code></pre>
+<ul>
 <li>Update nginx deployment and add resources requests CPU <code>200m</code></li>
 </ul>
-<pre><code class="language-shell">kubectl patch deployment test --type='json' -p='[{&quot;op&quot;:&quot;add&quot;, &quot;path&quot;:&quot;/spec/template/spec/containers/0/resources/requests&quot;, &quot;value&quot;:{&quot;cpu&quot;:&quot;200m&quot;}}]'
+<pre><code class="language-shell">kubectl patch deployment -n webapp test --type='json' -p='[{&quot;op&quot;:&quot;add&quot;, &quot;path&quot;:&quot;/spec/template/spec/containers/0/resources/requests&quot;, &quot;value&quot;:{&quot;cpu&quot;:&quot;200m&quot;}}]'
 </code></pre>
 <ul>
 <li>Enable Horizontal Pod Autoscaler for <code>test</code> deployment</li>
 </ul>
-<pre><code class="language-shell">kubectl autoscale deployment test --min=1 --max=5 --cpu-percent=60
+<pre><code class="language-shell">kubectl autoscale deployment -n webapp test --min=1 --max=5 --cpu-percent=60
 </code></pre>
 <ul>
 <li>Check HPA staus</li>
 </ul>
-<pre><code class="language-shell">kubectl get hpa nginx
+<pre><code class="language-shell">kubectl get hpa nginx -n webapp
 </code></pre>
 <p>Output:</p>
 <pre><code>NAME    REFERENCE          TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
