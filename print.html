@@ -1351,7 +1351,7 @@ kubectl top pods -n webapp
 <ul>
 <li>Check HPA staus</li>
 </ul>
-<pre><code class="language-shell">kubectl get hpa nginx -n webapp
+<pre><code class="language-shell">kubectl get hpa test -n webapp
 </code></pre>
 <p>Output:</p>
 <pre><code>NAME    REFERENCE          TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
@@ -1360,12 +1360,12 @@ nginx   Deployment/nginx   0%/60%    1         5         1          36m
 <ul>
 <li>Check HPA event logs</li>
 </ul>
-<pre><code class="language-shell">kubectl describe hpa nginx
+<pre><code class="language-shell">kubectl describe hpa -n webapp test
 </code></pre>
 <ul>
 <li>Clean up</li>
 </ul>
-<pre><code class="language-shell">kubectl delete deployment test
+<pre><code class="language-shell">kubectl delete namespace webapp 
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lab-exercises-for-configmaps-and-secrets"><a class="header" href="#lab-exercises-for-configmaps-and-secrets">Lab Exercises for ConfigMaps and Secrets</a></h1>
 <h2 id="exercise-0---create-configmaps-from-files"><a class="header" href="#exercise-0---create-configmaps-from-files">Exercise 0 - <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#create-configmaps-from-files">Create ConfigMaps from files</a></a></h2>
