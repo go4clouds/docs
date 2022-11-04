@@ -2316,10 +2316,10 @@ listen stats
 <p>Notes: <a href="https://docs.projectcalico.org/reference/architecture/overview">Calico achitecture</a></p>
 <h2 id="exercise-0---examine-installed-kubernetes-network-plugin"><a class="header" href="#exercise-0---examine-installed-kubernetes-network-plugin">Exercise 0 - Examine installed Kubernetes Network Plugin</a></h2>
 <ul>
-<li>SSH on k8s-master1 and check Kubernetes CNI plugin</li>
+<li>SSH on cp1 and check Kubernetes CNI plugin</li>
 </ul>
-<pre><code class="language-shell">ssh root@master1 cat /etc/cni/net.d/10-calico.conflist
-ssh root@master1 cat /etc/cni/net.d/calico-kubeconfig
+<pre><code class="language-shell">ssh root@cp1 cat /etc/cni/net.d/10-calico.conflist
+ssh root@cp1 cat /etc/cni/net.d/calico-kubeconfig
 </code></pre>
 <ul>
 <li>Check Calico controller and agents</li>
@@ -2406,9 +2406,9 @@ calicoctl get ippools
 </code></pre>
 <p>Output</p>
 <pre><code>NAME                        READY   STATUS    RESTARTS   AGE   IP               NODE          NOMINATED NODE   READINESS GATES
-pingtest-64f9cb6b84-qh5zj   1/1     Running   0          9s    192.168.194.84   k8s-worker1   &lt;none&gt;           &lt;none&gt;
-pingtest-64f9cb6b84-snl62   1/1     Running   0          9s    192.168.194.85   k8s-worker1   &lt;none&gt;           &lt;none&gt;
-pingtest-64f9cb6b84-x46vd   1/1     Running   0          9s    192.168.126.10   k8s-worker2   &lt;none&gt;           &lt;none&gt;
+pingtest-64f9cb6b84-qh5zj   1/1     Running   0          9s    192.168.194.84   worker1       &lt;none&gt;           &lt;none&gt;
+pingtest-64f9cb6b84-snl62   1/1     Running   0          9s    192.168.194.85   worker1       &lt;none&gt;           &lt;none&gt;
+pingtest-64f9cb6b84-x46vd   1/1     Running   0          9s    192.168.126.10   worker2       &lt;none&gt;           &lt;none&gt;
 </code></pre>
 <p>Note the IP addresses of the second two pods, then exec into the first one. For example</p>
 <pre><code class="language-shell">kubectl exec -ti pingtest-64f9cb6b84-qh5zj -- sh
@@ -2429,7 +2429,7 @@ round-trip min/avg/max = 0.442/0.865/1.847 ms
 </code></pre>
 <p>Check routes
 From one of the nodes, verify that routes exist to each of the pingtest pods’ IP addresses. For example</p>
-<pre><code class="language-shell">ssh k8s-worker1 ip route get 192.168.126.10
+<pre><code class="language-shell">ssh worker1 ip route get 192.168.126.10
 </code></pre>
 <p>Result</p>
 <pre><code>192.168.126.10 via 10.168.0.202 dev tunl0 src 192.168.194.64 uid 1000 
@@ -2468,11 +2468,11 @@ EOF
 </code></pre>
 <p>Result</p>
 <pre><code>NAME             READY   STATUS    RESTARTS   AGE    IP             NODE          NOMINATED NODE   READINESS GATES
-pingtest-pool2   1/1     Running   0          3d5h   172.18.126.0   k8s-worker2   &lt;none&gt;           &lt;none&gt;
+pingtest-pool2   1/1     Running   0          3d5h   172.18.126.0   worker2       &lt;none&gt;           &lt;none&gt;
 </code></pre>
 <p>From one of the original pingtest pods, ping the IP address.</p>
 <pre><code class="language-shell">ssh worker1 ping 172.18.126.0 -c 4
-ssh master3 ping 172.18.126.0 -c 4
+ssh cp3 ping 172.18.126.0 -c 4
 </code></pre>
 <p>Result</p>
 <pre><code>PING 172.18.126.0 (172.18.126.0) 56(84) bytes of data.
@@ -2491,7 +2491,7 @@ rtt min/avg/max/mdev = 0.294/0.470/0.784/0.188 ms
 kubectl delete pod pingtest-pool2
 </code></pre>
 <h2 id="optional-0---create-linux-namespaces-with-ip"><a class="header" href="#optional-0---create-linux-namespaces-with-ip">Optional 0 - Create Linux Namespaces with IP</a></h2>
-<p>Please <code>k8s-master3</code> as <code>root</code></p>
+<p>Please <code>cp3</code> as <code>root</code></p>
 <ul>
 <li>Create Linux network namespace for container1</li>
 </ul>
@@ -2619,7 +2619,7 @@ sysctl -w net.ipv4.ip_forward=1
 </code></pre>
 <h2 id="optional-1---make-kubernetes-container-namespaces-visible"><a class="header" href="#optional-1---make-kubernetes-container-namespaces-visible">Optional 1 - Make Kubernetes container namespaces visible</a></h2>
 <ul>
-<li>SSH on <code>k8s-worker2</code></li>
+<li>SSH on <code>worker2</code></li>
 </ul>
 <pre><code class="language-shell">ln -s /var/run/docker/netns  /var/run/netns
 </code></pre>
