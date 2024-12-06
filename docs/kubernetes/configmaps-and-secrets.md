@@ -197,12 +197,19 @@ metadata:
 
 webapp-html.yaml
 ```yaml title= webapp-html.yaml"
+apiVersion: v1
 data:
   index.html: |
-    <h1>Hello world from ConfigMap!</h1>
+    <html>
+        <head>
+            <title>Welcome to WebAPP!</title>
+        </head>
+        <body>
+            <h1>Success! The WebAPP application is working!</h1>
+        </body>
+    </html>
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: webapp-html
   namespace: webapp
 ```
