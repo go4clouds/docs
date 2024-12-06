@@ -197,29 +197,14 @@ metadata:
 
 webapp-html.yaml
 ```yaml title= webapp-html.yaml"
-apiVersion: v1
 data:
-  webapp.conf: |
-    server {
-        listen 80 default_server;
-
-        root /srv/webapp;
-        index index.html;
-
-        server_name _;
-
-        access_log /var/log/nginx/webapp.access_log main;
-        error_log /var/log/nginx/webapp.error_log;
-
-        location / {
-            try_files $uri $uri/ =404;
-        }
-    }
+  index.html: |
+    <h1>Hello world from ConfigMap!</h1>
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: webapp-conf
-  namespace: webapp1
+  name: webapp-html
+  namespace: webapp
 ```
 
 </details>
